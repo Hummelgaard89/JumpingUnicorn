@@ -1,0 +1,24 @@
+﻿
+<h3>RegisterUsername</h3>
+
+<form method="post">
+
+    <input type="text" name="username" min="6" max="50" pattern="[A-z0-9_-]{6,}" />
+    <input type="submit" value="Submit"/>
+</form>
+
+<EditForm OnSubmit="@HandleUsername">
+    <InputText id="name" @bind-Value="username"/>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+    string username;
+
+    public void HandleUsername()
+    {
+        Console.WriteLine("En nigget har skrevet: " + username);
+    }
+
+}

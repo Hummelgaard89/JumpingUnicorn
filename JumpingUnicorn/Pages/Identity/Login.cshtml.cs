@@ -34,6 +34,17 @@ namespace JumpingUnicorn.Pages.Identity
                     IsPersistent = true,
                     RedirectUri = this.Request.Host.Value
                 };
+
+                if(GoogleUser.HasClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", "106521800893253693222"))
+                {
+                    GoogleUser.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
+                }
+                else
+                {
+                    GoogleUser.AddClaim(new Claim(ClaimTypes.Role, "User"));
+                }
+
+
                 await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(GoogleUser),
