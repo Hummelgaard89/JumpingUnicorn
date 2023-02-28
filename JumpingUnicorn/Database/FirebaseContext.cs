@@ -50,7 +50,9 @@ namespace JumpingUnicorn.Database
             CollectionReference citiesRef = db.Collection("users");
             Query query = citiesRef.WhereEqualTo("userId", id);
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
-            return querySnapshot.Count > 0;
+            DocumentSnapshot document = querySnapshot.Documents.First();
+            string a = document.GetValue<string>("username");
+            return string.IsNullOrEmpty(a);
         }
     }
 }

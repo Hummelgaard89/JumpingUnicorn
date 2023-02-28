@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Google.Cloud.Firestore;
 using JumpingUnicorn.Database;
 using JumpingUnicorn.Policy;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JumpingUnicorn
 {
@@ -24,7 +25,7 @@ namespace JumpingUnicorn
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-            services.AddScoped<FirebaseContext>(); 
+            services.AddSingleton<FirebaseContext>(); 
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
                 options => 
@@ -49,6 +50,8 @@ namespace JumpingUnicorn
                 options.AddPolicy("UsernameSet", policy =>
                     policy.Requirements.Add(new SetUsernameRequirment(true)));
             });
+
+            services.AddScoped<IAuthorizationHandler, SetUsernameRequirmentHandler>();
 
             services.AddHttpContextAccessor();
             services.AddScoped<HttpContextAccessor>();

@@ -1,4 +1,6 @@
-﻿
+﻿@page "/RegisterUsername"
+@inject IHttpContextAccessor _httpContextAccessor
+@inject IAuthorizationHandler handler;
 <h3>RegisterUsername</h3>
 
 <form method="post">
@@ -16,9 +18,12 @@
 @code {
     string username;
 
+
+
     public void HandleUsername()
     {
         Console.WriteLine("En nigget har skrevet: " + username);
+
     }
 
 }

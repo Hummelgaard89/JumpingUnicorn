@@ -15,7 +15,12 @@ namespace JumpingUnicorn.Policy
         {
             string id = context.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
 
-            if (await db.DoesUserHasUsername(id))
+            if (string.IsNullOrEmpty(id))
+            {
+                return Task.CompletedTask;
+            }
+
+            if (!await db.DoesUserHasUsername(id))
             {
                 context.Succeed(requirement);
             }

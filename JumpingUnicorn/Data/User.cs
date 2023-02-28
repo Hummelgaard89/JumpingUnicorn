@@ -8,6 +8,11 @@
 
         public string Id { get; set; }
 
-
+        public User(string username, string googleavatar, string id)
+        {
+            Username = username;
+            GoogleAvatar = googleavatar;
+            Id = id;
+        }
     }
 }
