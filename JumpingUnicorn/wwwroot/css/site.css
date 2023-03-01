@@ -1,5 +1,148 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+#GameAvatar {
+    width: 15vw;
+    bottom: 8vh;
+    position: absolute;
+    right: calc(100% - 20vw);
+}
+
+#Ground {
+    width: 100%;
+    height: 8vh;
+    position: absolute;
+    bottom: 0;
+}
+
+.mainBackgroundIMG {
+    height: 90vh;
+    width: 100vw;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url("../Images/MainBackground.jpg");
+    margin: 0;
+    position: absolute;
+    display: block;
+}
+
+.LogoContainer {
+    width: 100vw;
+    height: fit-content;
+    background-color: red;
+}
+
+.Logo {
+    left: 25%;
+    width: 50%;
+    position: absolute;
+}
+
+.testingcolor{
+    color: darkorange;
+}
+
+.ButtonsContainer {
+    margin-top: 23vh;
+    width: 100vw;
+    display: block;
+    text-align: center;
+    height: fit-content;
+}
+
+.CloudyButton {
+    display: inline-block;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    border-radius: 12px;
+    border: solid;
+    border-color: black;
+    border-width: 2px;
+    background-image: url("../Images/ButtonBackground.jpg");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    height: 13vh;
+    width: 20vw;
+    font-size: 3vw;
+    font-weight: bold;
+}
+
+.CurrentAvatarContainer {
+    display: inline-block;
+    margin-top: 3vh;
+    margin-left: 28.88vw;
+    margin-right: 1vw;
+    border-radius: 12px;
+    border: solid;
+    border-color: black;
+    border-width: 2px;
+    height: 20vw;
+    width: 20vw;
+    background-image: url("../Images/ButtonBackground.jpg");
+    background-size: 100% 100%;
+    background-repeat:no-repeat;
+}
+
+.CurrentAvatar {
+    border-radius: 13px;
+    width:20vw;
+    height: 100%;
+    background-image: url("../Images/StraightRainbow.PNG");
+    background-repeat:no-repeat;
+    background-size:98.9% 20%;
+    background-position-y:bottom;
+}
+
+.PickAvatarContainer {
+    display: inline-block;
+    margin-top: 3vh;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    border-radius: 12px;
+    border: solid;
+    border-color: black;
+    border-width: 2px;
+    height: 20vw;
+    width: 20vw;
+    background-image: url("../Images/ButtonBackground.jpg");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.PickAvatar {
+    border-radius: 13px;
+    width: 20vw;
+    height: 100%;
+    background-image: url("../Images/StraightRainbow.PNG");
+    background-repeat: no-repeat;
+    background-size: 98.9% 20%;
+    background-position-y: bottom;
+}
+
+.AvatarSelection {
+
+}
+
+.GameBackground {
+    background-image: url("../Images/GameBackground3.jpg");
+    background-repeat: no-repeat;
+    height: 90vh;
+    top: 10vh;
+    width: 100vW;
+    border-width: 0;
+    padding: 0px;
+    display: flex;
+}
+
+.GameRainbow {
+    background-image: url("../Images/StraightRainbow.PNG");
+    background-repeat: no-repeat;
+    height: 90vh;
+    width: 100vw;
+    background-position-y: bottom;
+    background-size: 100% 15%;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -23,7 +166,7 @@ a, .btn-link {
 }
 
 .content {
-    padding-top: 1.1rem;
+    padding-top: 0;
 }
 
 .valid.modified:not([type=checkbox]) {

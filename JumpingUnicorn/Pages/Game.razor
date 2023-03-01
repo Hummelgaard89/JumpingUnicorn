@@ -1,0 +1,78 @@
+﻿@page "/Game"
+@inject IJSRuntime JSRT;
+
+
+<PageTitle>Game</PageTitle>
+<button class="GameBackground">
+    <div class="GameRainbow">
+        <img id="GameAvatar" src="/Images/Unicorns/Unicorn1MediumTransparent.gif"/>
+        <h1 id="ChangeTest">Score: </h1>
+        
+    </div>
+</button>
+
+@code {
+    private IJSObjectReference? jsModule;
+    private DotNetObjectReference<Game> objRef;
+    protected override void OnInitialized()
+    {
+        objRef = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRendering)
+    {
+        if (firstRendering)
+        {
+            jsModule = await JSRT.InvokeAsync<IJSObjectReference>("import", "./Pages/Game.razor.js");
+            await JSRT.InvokeVoidAsync("instantiateListeners", objRef);
+        }
+        await base.OnAfterRenderAsync(firstRendering);
+    }
+    [JSInvokable]
+    public async void ReturnKeystroke(Object keystroke)
+    {
+        Console.WriteLine(keystroke.ToString());
+        if (keystroke.ToString() == "Keyboard:38" || keystroke.ToString() == "Mouse:1")
+        {
+            Console.WriteLine("The fluffy little unicorn is jumping");
+            Jump();
+
+        }
+        else
+        {
+            Console.WriteLine("YOOOU SHAL NOT PAAAAAAAASS!!!!!!!!!");
+            Jumpx();
+
+        }
+    }
+
+    [JSInvokable]
+    public async void Jump()
+    {
+        DateTime PreviousGameTime = DateTime.Now;
+        double height = 8;
+        while (height < 30)
+        {
+            TimeSpan GameTime = DateTime.Now - PreviousGameTime;
+            PreviousGameTime = PreviousGameTime + GameTime;
+            Console.WriteLine(int.Parse(GameTime.TotalMilliseconds.ToString()));
+            height = (height + (8/height));
+            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", height);
+            await Task.Delay(5);
+        }
+        while (height > 8)
+        {
+            height = (height - (8 / height));
+            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", height);
+            await Task.Delay(5);
+        }
+    }
+
+    [JSInvokable]
+    public async void Jumpx()
+    {
+            await jsModule.InvokeVoidAsync("ChangeAvatarBottomx");
+    }
+    
+
+}
