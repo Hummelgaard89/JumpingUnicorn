@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Google.Cloud.Firestore;
+using JumpingUnicorn.Database;
+using JumpingUnicorn.Policy;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JumpingUnicorn
 {
@@ -11,6 +15,7 @@ namespace JumpingUnicorn
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
             var connectionString = builder.Configuration.GetConnectionString("JumpingUnicornContextConnection") ?? throw new InvalidOperationException("Connection string 'JumpingUnicornContextConnection' not found.");
             var services = builder.Services;
@@ -20,8 +25,17 @@ namespace JumpingUnicorn
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<FirebaseContext>(); 
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+                options => 
+                {
+                    options.Cookie.Name = "LogInCookie";
+                    options.Cookie.HttpOnly = true;
+                    options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                    options.LoginPath = "/Login";
+                    options.AccessDeniedPath = "/";
+                });
 
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
@@ -31,6 +45,13 @@ namespace JumpingUnicorn
                 googleOptions.ClaimActions.MapJsonKey("urn:google:image", "picture");
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("UsernameSet", policy =>
+                    policy.Requirements.Add(new SetUsernameRequirment(true)));
+            });
+
+            services.AddScoped<IAuthorizationHandler, SetUsernameRequirmentHandler>();
 
             services.AddHttpContextAccessor();
             services.AddScoped<HttpContextAccessor>();
@@ -53,6 +74,7 @@ namespace JumpingUnicorn
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
+            app.UseAuthorization();
 
 
             app.UseRouting();

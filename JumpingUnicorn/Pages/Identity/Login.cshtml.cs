@@ -1,8 +1,10 @@
+using JumpingUnicorn.Database;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Linq;
 using System.Security.Claims;
 
 namespace JumpingUnicorn.Pages.Identity
@@ -10,6 +12,13 @@ namespace JumpingUnicorn.Pages.Identity
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
+        private readonly FirebaseContext _firebaseContext;
+
+        public LoginModel(FirebaseContext firebaseContext)
+        {
+            _firebaseContext = firebaseContext;
+        }
+
         public IActionResult OnGetAsync(string returnUrl = null)
         {
             string provider = "Google";
@@ -34,6 +43,26 @@ namespace JumpingUnicorn.Pages.Identity
                     IsPersistent = true,
                     RedirectUri = this.Request.Host.Value
                 };
+
+                if(GoogleUser.HasClaim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", "106521800893253693222"))
+                {
+                    GoogleUser.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
+                }
+                else
+                {
+                    GoogleUser.AddClaim(new Claim(ClaimTypes.Role, "User"));
+                }
+                
+                if (!await _firebaseContext.DoesUserExistAsync(GoogleUser.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value))
+                {
+                    string id = GoogleUser.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+                    string username = "";
+                    string avatar = GoogleUser.Claims.Where(x => x.Type == "urn:google:image").FirstOrDefault().Value;
+
+
+                    await _firebaseContext.AddUserAsync(new Data.User(username,avatar, id));
+                }
+
                 await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(GoogleUser),

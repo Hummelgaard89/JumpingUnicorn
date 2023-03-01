@@ -5,7 +5,7 @@
 @if (User.Identity.Name != null)
 {
     <img src="@Avatar" width="56"  height="56"/>
-    <b>You are logged in as: @GivenName @Surname</b>
+    <b>(@Role) You are logged in as: @GivenName @Surname</b>
     <a class="ml-md-auto btn btn-primary"
    href="/Identity/Logout"
    target="_top">Logout</a>
@@ -21,6 +21,7 @@ else
     private string GivenName;
     private string Surname;
     private string Avatar;
+    private string Role;
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -28,6 +29,19 @@ else
         {
             // Set the user to determine if they are logged in
             User = _httpContextAccessor.HttpContext.User;
+
+            var role = _httpContextAccessor.HttpContext.User
+                .FindFirst(ClaimTypes.Role);
+
+            if (role != null)
+            {
+                Role = role.Value;
+            }
+            else
+            {
+                Role = "Unknow Role";
+            }  
+
             // Try to get the GivenName
             var givenName =
                 _httpContextAccessor.HttpContext.User
