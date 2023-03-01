@@ -1,29 +1,27 @@
 ﻿@page "/RegisterUsername"
+@using JumpingUnicorn.Models;
+@using JumpingUnicorn.Database;
+@using System.Security.Claims;
 @inject IHttpContextAccessor _httpContextAccessor
 @inject IAuthorizationHandler handler;
+@inject FirebaseContext firebase;
+
 <h3>RegisterUsername</h3>
 
-<form method="post">
-
-    <input type="text" name="username" min="6" max="50" pattern="[A-z0-9_-]{6,}" />
-    <input type="submit" value="Submit"/>
-</form>
-
-<EditForm OnSubmit="@HandleUsername">
-    <InputText id="name" @bind-Value="username"/>
-
+<EditForm Model="@model" OnValidSubmit="@HandleUsername">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText id="name" @bind-Value="model.Username"/>
     <button type="submit">Submit</button>
 </EditForm>
 
 @code {
-    string username;
+    private UsernameModel model = new();
 
-
-
-    public void HandleUsername()
+    public async Task HandleUsername()
     {
-        Console.WriteLine("En nigget har skrevet: " + username);
-
+        Console.WriteLine("En nigget har skrevet: " + model.Username);
+        await firebase.SetUsername(_httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value, model.Username);
     }
 
 }

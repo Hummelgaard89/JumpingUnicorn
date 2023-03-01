@@ -8,6 +8,7 @@ using Google.Cloud.Firestore;
 using JumpingUnicorn.Database;
 using JumpingUnicorn.Policy;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace JumpingUnicorn
 {
@@ -34,7 +35,7 @@ namespace JumpingUnicorn
                     options.Cookie.HttpOnly = true;
                     options.ExpireTimeSpan = TimeSpan.FromDays(1);
                     options.LoginPath = "/Login";
-                    options.AccessDeniedPath = "/";
+                    options.AccessDeniedPath = "/Leaderboard";
                 });
 
             services.AddAuthentication().AddGoogle(googleOptions =>
@@ -48,10 +49,13 @@ namespace JumpingUnicorn
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("UsernameSet", policy =>
-                    policy.Requirements.Add(new SetUsernameRequirment(true)));
+                {
+                    policy.Requirements.Add(new SetUsernameRequirment(true));
+                });
             });
 
             services.AddScoped<IAuthorizationHandler, SetUsernameRequirmentHandler>();
+
 
             services.AddHttpContextAccessor();
             services.AddScoped<HttpContextAccessor>();

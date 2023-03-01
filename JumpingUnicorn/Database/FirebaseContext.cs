@@ -52,7 +52,20 @@ namespace JumpingUnicorn.Database
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             DocumentSnapshot document = querySnapshot.Documents.First();
             string a = document.GetValue<string>("username");
-            return string.IsNullOrEmpty(a);
+            return !string.IsNullOrEmpty(a);
+        }
+
+        public async Task SetUsername(string id, string username)
+        {
+            CollectionReference citiesRef = db.Collection("users");
+            Query query = citiesRef.WhereEqualTo("userId", id);
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            DocumentSnapshot document = querySnapshot.Documents.First();
+            Dictionary<string, object> updates = new Dictionary<string, object>
+            {
+                { "username", username }
+            };
+            await document.Reference.UpdateAsync(updates);
         }
     }
 }
