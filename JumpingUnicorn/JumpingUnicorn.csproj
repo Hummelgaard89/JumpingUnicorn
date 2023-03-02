@@ -9,9 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Resources\**" />
+    <Content Remove="Resources\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Cloud.Firestore" Version="3.1.0" />
-    <None Remove="Resources\CloudyBackground.jpg" />
-    <None Remove="Resources\StraightRainbow.PNG" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,10 +31,6 @@
     <Resource Include="wwwroot\Images\StraightRainbow.PNG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Resources\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -27,6 +27,8 @@ else
         base.OnInitialized();
         try
         {
+
+            InvokeAsync(() => {});
             // Set the user to determine if they are logged in
             User = _httpContextAccessor.HttpContext.User;
 
@@ -81,4 +83,6 @@ else
         }
         catch { }
     }
+
+
 }

@@ -15,6 +15,10 @@ export function ChangeAvatarBottomx() {
     }
 }
 
+export function SetScore(score) {
+    document.getElementById("ScoreCount").innerHTML = score;
+}
+
 window.instantiateListeners = (dotNetHelper) => {
     addEventListener("keydown", ( event ) => {
         dotNetHelper.invokeMethodAsync('ReturnKeystroke', 'Keyboard:' + event.keyCode);
