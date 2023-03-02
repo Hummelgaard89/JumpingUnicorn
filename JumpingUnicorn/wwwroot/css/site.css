@@ -14,6 +14,20 @@
     bottom: 0;
 }
 
+#Obstacle1 {
+    width: 10vw;
+    bottom: 8vh;
+    position: absolute;
+    right: 0vh;
+}
+#Obstacle2 {
+    width: 10vw;
+    bottom: 8vh;
+    position: absolute;
+    right: 0vh;
+    
+}
+
 .mainBackgroundIMG {
     height: 90vh;
     width: 100vw;
@@ -128,19 +142,23 @@
     background-repeat: no-repeat;
     height: 90vh;
     top: 10vh;
-    width: 100vW;
+    width: 100%;
     border-width: 0;
     padding: 0px;
     display: flex;
+    overflow: hidden;
+    position: absolute;
 }
 
 .GameRainbow {
     background-image: url("../Images/StraightRainbow.PNG");
     background-repeat: no-repeat;
     height: 90vh;
-    width: 100vw;
+    width: 100%;
     background-position-y: bottom;
     background-size: 100% 15%;
+    overflow: hidden;
+    position: absolute;
 }
 
 html, body {
