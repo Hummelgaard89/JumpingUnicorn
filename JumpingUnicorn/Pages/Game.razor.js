@@ -14,10 +14,6 @@ export function ChangeObstaclePosition(position, id) {
     document.getElementById(id).style.right = position
 }
 
-export function ChangeAvatarPath(imagePath, id) {
-    document.getElementById(id).style.content = imagePath
-}
-
 export function ChangeAvatarBottomx() {
     let avatarBottom = parseFloat(window.getComputedStyle(document.getElementById('GameAvatar')).getPropertyValue('bottom'));
     let height = 0;

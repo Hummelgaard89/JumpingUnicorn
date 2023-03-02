@@ -136,21 +136,21 @@
             {
                 string avatarPathString = "/Images/Unicorns/Unicorn1SlowTransparent.gif";
                 avatarPath = new MarkupString(avatarPathString);
-                //InvokeAsync(() => { StateHasChanged(); });
+                InvokeAsync(() => { StateHasChanged(); });
                 Console.WriteLine("Den fede lille enøjning løber nu langsomt");
             }
             else if (gameSpeed > 0.4 && gameSpeed < 0.8)
             {
                 string avatarPathString = "/Images/Unicorns/UnicornMediumTransparent.gif";
                 avatarPath = new MarkupString(avatarPathString);
-                //InvokeAsync(() => { StateHasChanged(); });
+                InvokeAsync(() => { StateHasChanged(); });
                 Console.WriteLine("Den fede lille enøjning har nu fået øje på noget mad og løber lidt hurtigere");
             }
             else if (gameSpeed > 0.8)
             {
                 string avatarPathString = "/Images/Unicorns/Unicorn1FastTransparent.gif";
                 avatarPath = new MarkupString(avatarPathString);
-                //InvokeAsync(() => { StateHasChanged(); });
+                InvokeAsync(() => { StateHasChanged(); });
                 Console.WriteLine("Nu så den fede lille enøjning kage, nu løber den alt hvad den kan");
             }
         }
