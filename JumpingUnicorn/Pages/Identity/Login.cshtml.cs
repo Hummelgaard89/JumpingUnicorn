@@ -34,10 +34,14 @@ namespace JumpingUnicorn.Pages.Identity
         public async Task<IActionResult> OnGetCallbackAsync(
             string returnUrl = null, string remoteError = null)
         {
+
+            string redirctURL = "/";
             // Get the information about the user from the external login provider
             var GoogleUser = this.User.Identities.FirstOrDefault();
             if (GoogleUser.IsAuthenticated)
             {
+                string userId = GoogleUser.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = true,
@@ -53,14 +57,22 @@ namespace JumpingUnicorn.Pages.Identity
                     GoogleUser.AddClaim(new Claim(ClaimTypes.Role, "User"));
                 }
                 
-                if (!await _firebaseContext.DoesUserExistAsync(GoogleUser.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value))
+                if (!await _firebaseContext.DoesUserExistAsync(userId))
                 {
-                    string id = GoogleUser.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+                    string id = userId;
                     string username = "";
                     string avatar = GoogleUser.Claims.Where(x => x.Type == "urn:google:image").FirstOrDefault().Value;
 
-
                     await _firebaseContext.AddUserAsync(new Data.User(username,avatar, id));
+                }
+
+                if (!await _firebaseContext.DoesUserHasUsername(userId))
+                {
+                    redirctURL = "/RegisterUsername";
+                }
+                else
+                {
+                    GoogleUser.AddClaim(new Claim("UsernameSet", "True"));
                 }
 
                 await HttpContext.SignInAsync(
@@ -68,7 +80,7 @@ namespace JumpingUnicorn.Pages.Identity
                 new ClaimsPrincipal(GoogleUser),
                 authProperties);
             }
-            return LocalRedirect("/");
+            return LocalRedirect(redirctURL);
         }
     }
 }

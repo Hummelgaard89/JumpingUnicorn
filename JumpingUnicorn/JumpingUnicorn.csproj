@@ -5,12 +5,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>7c40b9a8-9670-496b-94df-98bbd764098d</UserSecretsId>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Resources\**" />
+    <Content Remove="Resources\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Cloud.Firestore" Version="3.1.0" />
-    <None Remove="Resources\CloudyBackground.jpg" />
-    <None Remove="Resources\StraightRainbow.PNG" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\" />
+    <Folder Include="Pages\javascript\" />
   </ItemGroup>
 
 </Project>

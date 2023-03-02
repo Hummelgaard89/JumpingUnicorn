@@ -1,5 +1,6 @@
-﻿@page "/"
-
+﻿@page "/";
+@using JumpingUnicorn.Data;
+@inject AvatarService avatarService;
 <PageTitle>Index</PageTitle>
 
 <!DOCTYPE html>
@@ -13,7 +14,7 @@
         <button class="CloudyButton" onclick="location.href = 'https://localhost:7224/Game'">New Game</button>
     </div>
     <div class="CurrentAvatarContainer">
-        <img class="CurrentAvatar" src="/Images/Unicorns/Unicorn1MediumTransparent.gif" />
+        <img class="CurrentAvatar" src=@avatarService.FindAvatar(Avatar.AvatarSpeed.Medium) />
     </div>
     <div class="PickAvatarContainer">
         <img class="PickAvatar" src="/Images/Unicorns/Unicorn2MediumTransparent.gif"/>
@@ -22,6 +23,6 @@
 
 </html>
 @code {
-
+    
 }
 

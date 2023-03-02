@@ -1,0 +1,11 @@
+﻿@inject NavigationManager NavManager
+
+<h3>UsernameRedirct</h3>
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavManager.NavigateTo("/RegisterUsername");
+        base.OnInitialized();
+    }
+}
