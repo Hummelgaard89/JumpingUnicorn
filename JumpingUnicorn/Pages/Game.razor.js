@@ -1,11 +1,24 @@
-﻿ export function ChangeAvatarBottom(height){
+﻿//Function to change the bottom of the avatar, to make it jump.
+export function ChangeAvatarBottom(height) {
     //PUT SHIT HERE
      document.getElementById('GameAvatar').style.bottom = height + 'vh'
 }
 
+//Function to hide og make the obstacles visible
+export function ChangeObstacleVisibility(visibility, id) {
+    document.getElementById(id).style.visibility = visibility
+}
+
+//function to move the obstacle, used for moving the obstacles from left to right
+export function ChangeObstaclePosition(position, id) {
+    document.getElementById(id).style.right = position
+}
+
+export function ChangeAvatarPath(imagePath, id) {
+    document.getElementById(id).style.content = imagePath
+}
+
 export function ChangeAvatarBottomx() {
-    //PUT SHIT HERE
-    //let height = document.getElementById('GameAvatar');
     let avatarBottom = parseFloat(window.getComputedStyle(document.getElementById('GameAvatar')).getPropertyValue('bottom'));
     let height = 0;
     while (avatarBottom < 30) {
@@ -15,15 +28,13 @@ export function ChangeAvatarBottomx() {
     }
 }
 
-export function SetScore(score) {
-    document.getElementById("ScoreCount").innerHTML = score;
-}
-
+//EventListeners for keyboard and mouse input. Inputs are sent to the code behind method ReturnKeyStroke()
 window.instantiateListeners = (dotNetHelper) => {
+    //This is the listener for keyboard inputs.
     addEventListener("keydown", ( event ) => {
         dotNetHelper.invokeMethodAsync('ReturnKeystroke', 'Keyboard:' + event.keyCode);
     });
-
+    //This is the listener for mouse inputs.
     addEventListener("mousedown", (event) => {
         dotNetHelper.invokeMethodAsync('ReturnKeystroke', 'Mouse:' + event.buttons);
     });

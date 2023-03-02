@@ -1,4 +1,6 @@
 ﻿@page "/Game"
+@using Microsoft.AspNetCore.Components.Web
+
 @inject IJSRuntime JSRT;
 @inject NavigationManager uriHelper;
 
@@ -6,19 +8,27 @@
 <PageTitle>Game</PageTitle>
 <button class="GameBackground">
     <div class="GameRainbow">
-        <img id="GameAvatar" src="/Images/Unicorns/Unicorn1MediumTransparent.gif"/>
-        <h1>Score: @count</h1>
-        
+        <img id="GameAvatar" src="@avatarPath" />
+        <img id="Obstacle1" src="/Images/Candy/BlackEvilCandy.png" />
+        <!--<img id="Obstacle2" src="/Images/Candy/OrangeSweetCandy.png" />-->
+        <div>@gameScore</div>
     </div>
 </button>
 
 @code {
-    public int count = 0;
+    string gameScoreString = "";
+    double scoreCount = 0;
+    bool isJumping = false;
+    double gameSpeed = 0;
+    MarkupString gameScore = new MarkupString();
+    MarkupString avatarPath = new MarkupString();
     private IJSObjectReference? jsModule;
     private DotNetObjectReference<Game> objRef;
+
     protected override void OnInitialized()
     {
         objRef = DotNetObjectReference.Create(this);
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRendering)
@@ -27,57 +37,129 @@
         {
             jsModule = await JSRT.InvokeAsync<IJSObjectReference>("import", "./Pages/Game.razor.js");
             await JSRT.InvokeVoidAsync("instantiateListeners", objRef);
+            //Thread obstacleThread = new Thread(new ThreadStart(Obstacles));
+            //obstacleThread.Name = "ObstacleThread";
+            //obstacleThread.Start();
+            Thread GameThread = new Thread(new ThreadStart(GameHandeling));
+            GameThread.Name = "GameThread";
+            GameThread.Start();
         }
         await base.OnAfterRenderAsync(firstRendering);
     }
+
     [JSInvokable]
     public void ReturnKeystroke(Object keystroke)
     {
         Console.WriteLine(keystroke.ToString());
-        if (keystroke.ToString() == "Keyboard:38" || keystroke.ToString() == "Mouse:1")
+        if ((keystroke.ToString() == "Keyboard:38" || keystroke.ToString() == "Mouse:1") && isJumping == false)
         {
             Console.WriteLine("The fluffy little unicorn is jumping");
             Jump();
-
+        }
+        else if ((keystroke.ToString() == "Keyboard:38" || keystroke.ToString() == "Mouse:1") && isJumping == true)
+        {
+            Console.WriteLine("The fluffy little unicorn is already jumping");
         }
         else
         {
-            Console.WriteLine("YOOOU SHAL NOT PAAAAAAAASS!!!!!!!!! | count: " + count);
-            count++;
-
-            //await jsModule.InvokeVoidAsync("SetScore", count);
-            Jumpx();
-            StateHasChanged();
+            Console.WriteLine("YOOOU SHAL NOT PAAAAAAAASS!!!!!!!!!");
+            gameSpeed = Math.Round(gameSpeed, 2) + 0.05;
+            Console.WriteLine(Math.Round(gameSpeed, 2));
         }
     }
 
-    [JSInvokable]
-    public void Jump()
+    public async void Jump()
     {
-        DateTime PreviousGameTime = DateTime.Now;
+        //DateTime PreviousGameTime = DateTime.Now;
+        //TimeSpan GameTime = DateTime.Now - DateTime.Now;
         double height = 8;
-        while (height < 30)
+        isJumping = true;
+        while (height < 40)
         {
-            TimeSpan GameTime = DateTime.Now - PreviousGameTime;
-            PreviousGameTime = PreviousGameTime + GameTime;
-            //Console.WriteLine(int.Parse(GameTime.TotalMilliseconds.ToString()));
-            height = (height + (8/height));
-            jsModule.InvokeVoidAsync("ChangeAvatarBottom", height);
-            Thread.Sleep(5);
+            //GameTime = DateTime.Now - PreviousGameTime;
+            //PreviousGameTime = PreviousGameTime + GameTime;
+            //Console.WriteLine((GameTime.TotalMilliseconds));
+            //height = (height + ( ( (8 / height) / 15) * (GameTime.TotalMilliseconds)));
+            height = Math.Round(height + 1, MidpointRounding.AwayFromZero);
+            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", height.ToString().Replace(",", "."));
+            await Task.Delay(10);
         }
         while (height > 8)
         {
-            height = (height - (8 / height));
-            jsModule.InvokeVoidAsync("ChangeAvatarBottom", height);
-            Thread.Sleep(5);
+            //GameTime = DateTime.Now - PreviousGameTime;
+            //PreviousGameTime = PreviousGameTime + GameTime;
+            //Console.WriteLine((GameTime.TotalMilliseconds));
+            //height = (height - (((8 / height) / 15) * (GameTime.TotalMilliseconds)));
+            height = Math.Round(height - 1, MidpointRounding.AwayFromZero);
+            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", height.ToString().Replace(",", "."));
+            await Task.Delay(10);
+        }
+        isJumping = false;
+    }
+
+    /*public void Obstacles()
+    {
+        double rightPosition = 0;
+        //double rightPosition2 = 20;
+        //DateTime gameStart = DateTime.Now;
+        //TimeSpan gameTime = DateTime.Now - gameStart;
+
+        while (true)
+        {
+            while (rightPosition < 100)
+            {
+                //gameTime = DateTime.Now - gameStart;
+                //scoreCount = Math.Round(gameTime.TotalSeconds, MidpointRounding.AwayFromZero);
+                //Console.WriteLine(scoreCount);
+                //CreateScore();
+                //InvokeAsync(() => { StateHasChanged(); });
+                jsModule.InvokeVoidAsync("ChangeObstaclePosition", rightPosition.ToString().Replace(",", ".")+ "%", "Obstacle1");
+                //jsModule.InvokeVoidAsync("ChangeObstaclePosition", rightPosition2 + "%", "Obstacle2");
+                //rightPosition = rightPosition +  0.5 + test;
+                rightPosition = Math.Round(rightPosition + 0.5 + gameSpeed, 2);
+                
+                //rightPosition2 = rightPosition2 + 0.5 + test;
+
+                Thread.Sleep(10);
+            }
+            Console.WriteLine(Math.Round(gameSpeed,2));
+            gameSpeed = Math.Round(gameSpeed, 2) + 0.05;
+            rightPosition = 0;
+            //rightPosition2 = 0;
+        }
+    }*/
+
+    public  void GameHandeling()
+    {
+        while (true)
+        {
+            if (gameSpeed < 0.4)
+            {
+                string avatarPathString = "/Images/Unicorns/Unicorn1SlowTransparent.gif";
+                avatarPath = new MarkupString(avatarPathString);
+                //InvokeAsync(() => { StateHasChanged(); });
+                Console.WriteLine("Den fede lille enøjning løber nu langsomt");
+            }
+            else if (gameSpeed > 0.4 && gameSpeed < 0.8)
+            {
+                string avatarPathString = "/Images/Unicorns/UnicornMediumTransparent.gif";
+                avatarPath = new MarkupString(avatarPathString);
+                //InvokeAsync(() => { StateHasChanged(); });
+                Console.WriteLine("Den fede lille enøjning har nu fået øje på noget mad og løber lidt hurtigere");
+            }
+            else if (gameSpeed > 0.8)
+            {
+                string avatarPathString = "/Images/Unicorns/Unicorn1FastTransparent.gif";
+                avatarPath = new MarkupString(avatarPathString);
+                //InvokeAsync(() => { StateHasChanged(); });
+                Console.WriteLine("Nu så den fede lille enøjning kage, nu løber den alt hvad den kan");
+            }
         }
     }
 
-    [JSInvokable]
-    public async void Jumpx()
+    public void CreateScore()
     {
-            await jsModule.InvokeVoidAsync("ChangeAvatarBottomx");
+        gameScoreString = "<h1>Score: " + scoreCount + "</h1>";
+        gameScore = new MarkupString(gameScoreString);
     }
-    
-
 }
