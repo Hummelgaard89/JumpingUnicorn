@@ -64,6 +64,9 @@ namespace JumpingUnicorn.Data
         public string FindAvatar(Avatar.AvatarSpeed wantedAvatarSpeed = Avatar.AvatarSpeed.Medium)
         {   
             int avatarIndex = 0;
+            if (_httpContextAccessor.HttpContext == null)
+                return GetAvatar(0, wantedAvatarSpeed);
+
             if (_httpContextAccessor.HttpContext.Request.Cookies["avatar"] == null)
                 return GetAvatar(0, wantedAvatarSpeed);
 
