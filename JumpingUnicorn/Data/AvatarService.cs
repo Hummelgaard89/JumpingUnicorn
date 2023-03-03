@@ -118,7 +118,7 @@ namespace JumpingUnicorn.Data
         /// <summary>
         /// Gets all the avatars that the player is not selected
         /// </summary>
-        /// <param name="wantedAvatarSpeed"></param>
+        /// <param name="wantedAvatarSpeed">Kage 123</param>
         /// <param name="indexes"></param>
         /// <returns>Returns the list of paths that the player is not selected</returns>
         public List<string> GetNonPlayerAvatars(Avatar.AvatarSpeed wantedAvatarSpeed, out List<int> indexes)
@@ -126,7 +126,6 @@ namespace JumpingUnicorn.Data
             List<string> result = new List<string>();
             indexes = new List<int>();
             int avatarIndex = GetPlayerAvatarIndex();
-
 
             for (int i = 0; i < Avatars.Count; i++)
             {

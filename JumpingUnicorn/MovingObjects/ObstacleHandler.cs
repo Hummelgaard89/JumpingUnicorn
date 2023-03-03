@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Web;
 using JumpingUnicorn.GameHandeling;
+using JumpingUnicorn.Data;
+using System.Security.Claims;
 
 namespace JumpingUnicorn.Obstacles
 {
@@ -25,13 +27,17 @@ namespace JumpingUnicorn.Obstacles
         private IJSObjectReference? jsModule;
         public static double obstacleSpeed = 0;
         public static bool isPlayerAlive = true;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly FirebaseContext firebaseContext;
 
-        public ObstacleHandler(IJSRuntime jsrt)
+        public ObstacleHandler(IJSRuntime jsrt, IHttpContextAccessor contextAccessor, FirebaseContext firebaseContext)
         {
             JSRT = jsrt;
+            _contextAccessor = contextAccessor;
+            this.firebaseContext = firebaseContext;
         }
 
-        
+
         public async void OnAfterRenderingObstaleHandler()
         {
             jsModule =  await JSRT.InvokeAsync<IJSObjectReference>("import", "./Pages/Game.razor.js");
@@ -102,6 +108,11 @@ namespace JumpingUnicorn.Obstacles
                 {
                     isPlayerAlive = false;
                     GameHandler.extraGamePoints = 0;
+
+                    var id = _contextAccessor.HttpContext.User
+                    .FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                    firebaseContext.SetHighscore(id, (int)GameHandler.scoreCount).ConfigureAwait(false);
                 }
             }
         }

@@ -16,7 +16,7 @@ namespace JumpingUnicorn.GameHandeling
         private DotNetObjectReference<Game> objRefGameHandeling;
         private IJSObjectReference? jsModule;
         string gameScoreString = "";
-        double scoreCount = 0;
+        public static double scoreCount = 0;
         public static int extraGamePoints = 0;
         double gameSpeed = 0;
         DateTime gameStart= DateTime.Now;

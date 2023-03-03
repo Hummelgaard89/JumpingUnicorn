@@ -76,7 +76,7 @@ namespace JumpingUnicorn.Database
         public async Task<List<User>> GetAllUsersAsync()
         {
             CollectionReference users = db.Collection("users");
-            Query query = users.OrderBy("highscore").Limit(20);
+            Query query = users.OrderByDescending("highscore").Limit(20);
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             List<DocumentSnapshot> documents = querySnapshot.Documents.ToList();
             List<User> usersList = new List<User>();
