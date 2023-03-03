@@ -14,20 +14,6 @@ export function ChangeObstaclePosition(position, id) {
     document.getElementById(id).style.right = position
 }
 
-export function ChangeAvatarPath(imagePath, id) {
-    document.getElementById(id).style.content = imagePath
-}
-
-export function ChangeAvatarBottomx() {
-    let avatarBottom = parseFloat(window.getComputedStyle(document.getElementById('GameAvatar')).getPropertyValue('bottom'));
-    let height = 0;
-    while (avatarBottom < 30) {
-        height = avatarBottom + (8 / avatarBottom);
-        document.getElementById('GameAvatar').style.bottom = height + 'vh';
-        setTimeout(10);
-    }
-}
-
 //EventListeners for keyboard and mouse input. Inputs are sent to the code behind method ReturnKeyStroke()
 window.instantiateListeners = (dotNetHelper) => {
     //This is the listener for keyboard inputs.

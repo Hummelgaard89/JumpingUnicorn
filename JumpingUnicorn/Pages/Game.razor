@@ -1,5 +1,12 @@
 ﻿@page "/Game"
 @using Microsoft.AspNetCore.Components.Web
+@using JumpingUnicorn.Data
+@using JumpingUnicorn.Obstacles
+@using JumpingUnicorn.GameHandeling
+
+@inject AvatarService avatarServiceHelper
+@inject ObstacleHandler obstacleHelper
+@inject GameHandler gameHelper
 @attribute [Authorize("UsernameSet")]
 @inject IHttpContextAccessor httpContextAccessor;
 @inject IJSRuntime JSRT;
@@ -10,26 +17,25 @@
 <button class="GameBackground">
     <div class="GameRainbow">
         <img id="GameAvatar" src="@avatarPath" />
-        <img id="Obstacle1" src="/Images/Candy/BlackEvilCandy.png" />
-        <!--<img id="Obstacle2" src="/Images/Candy/OrangeSweetCandy.png" />-->
+        <img id="Obstacle1" src="@obstacleHelper.obstaclePath" />
         <div>@gameScore</div>
     </div>
 </button>
 
 @code {
-    string gameScoreString = "";
-    double scoreCount = 0;
     bool isJumping = false;
-    double gameSpeed = 0;
-    MarkupString gameScore = new MarkupString();
-    MarkupString avatarPath = new MarkupString();
+    public static double avatarBottomHeight = 8;
+    public static MarkupString gameScore = new MarkupString();
+    public static MarkupString avatarPath = new MarkupString();
     private IJSObjectReference? jsModule;
     private DotNetObjectReference<Game> objRef;
 
     protected override void OnInitialized()
     {
         objRef = DotNetObjectReference.Create(this);
-
+        obstacleHelper.objRefGame = this;
+        gameHelper.objRefGame = this;
+        obstacleHelper.InitializeObstacleHandler();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRendering)
@@ -38,16 +44,14 @@
         {
             jsModule = await JSRT.InvokeAsync<IJSObjectReference>("import", "./Pages/Game.razor.js");
             await JSRT.InvokeVoidAsync("instantiateListeners", objRef);
-            //Thread obstacleThread = new Thread(new ThreadStart(Obstacles));
-            //obstacleThread.Name = "ObstacleThread";
-            //obstacleThread.Start();
-            Thread GameThread = new Thread(new ThreadStart(GameHandeling));
-            GameThread.Name = "GameThread";
-            GameThread.Start();
+            obstacleHelper.OnAfterRenderingObstaleHandler();
+            obstacleHelper.StartThread();
+            gameHelper.StartThread();
         }
         await base.OnAfterRenderAsync(firstRendering);
     }
 
+    //Method that gets the input from clientside keyboard and mouse via javascript function.
     [JSInvokable]
     public void ReturnKeystroke(Object keystroke)
     {
@@ -64,103 +68,31 @@
         else
         {
             Console.WriteLine("YOOOU SHAL NOT PAAAAAAAASS!!!!!!!!!");
-            gameSpeed = Math.Round(gameSpeed, 2) + 0.05;
-            Console.WriteLine(Math.Round(gameSpeed, 2));
         }
     }
 
+    //To re-render.
+    public void UpdateState()
+    {
+        InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    //Method for jumping with the avatar.
     public async void Jump()
     {
-        //DateTime PreviousGameTime = DateTime.Now;
-        //TimeSpan GameTime = DateTime.Now - DateTime.Now;
-        double height = 8;
         isJumping = true;
-        while (height < 40)
+        while (avatarBottomHeight < 40)
         {
-            //GameTime = DateTime.Now - PreviousGameTime;
-            //PreviousGameTime = PreviousGameTime + GameTime;
-            //Console.WriteLine((GameTime.TotalMilliseconds));
-            //height = (height + ( ( (8 / height) / 15) * (GameTime.TotalMilliseconds)));
-            height = Math.Round(height + 1, MidpointRounding.AwayFromZero);
-            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", height.ToString().Replace(",", "."));
+            avatarBottomHeight = Math.Round(avatarBottomHeight + 1, MidpointRounding.AwayFromZero);
+            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", avatarBottomHeight.ToString().Replace(",", "."));
             await Task.Delay(10);
         }
-        while (height > 8)
+        while (avatarBottomHeight > 8)
         {
-            //GameTime = DateTime.Now - PreviousGameTime;
-            //PreviousGameTime = PreviousGameTime + GameTime;
-            //Console.WriteLine((GameTime.TotalMilliseconds));
-            //height = (height - (((8 / height) / 15) * (GameTime.TotalMilliseconds)));
-            height = Math.Round(height - 1, MidpointRounding.AwayFromZero);
-            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", height.ToString().Replace(",", "."));
+            avatarBottomHeight = Math.Round(avatarBottomHeight - 1, MidpointRounding.AwayFromZero);
+            await jsModule.InvokeVoidAsync("ChangeAvatarBottom", avatarBottomHeight.ToString().Replace(",", "."));
             await Task.Delay(10);
         }
         isJumping = false;
-    }
-
-    /*public void Obstacles()
-    {
-        double rightPosition = 0;
-        //double rightPosition2 = 20;
-        //DateTime gameStart = DateTime.Now;
-        //TimeSpan gameTime = DateTime.Now - gameStart;
-
-        while (true)
-        {
-            while (rightPosition < 100)
-            {
-                //gameTime = DateTime.Now - gameStart;
-                //scoreCount = Math.Round(gameTime.TotalSeconds, MidpointRounding.AwayFromZero);
-                //Console.WriteLine(scoreCount);
-                //CreateScore();
-                //InvokeAsync(() => { StateHasChanged(); });
-                jsModule.InvokeVoidAsync("ChangeObstaclePosition", rightPosition.ToString().Replace(",", ".")+ "%", "Obstacle1");
-                //jsModule.InvokeVoidAsync("ChangeObstaclePosition", rightPosition2 + "%", "Obstacle2");
-                //rightPosition = rightPosition +  0.5 + test;
-                rightPosition = Math.Round(rightPosition + 0.5 + gameSpeed, 2);
-                
-                //rightPosition2 = rightPosition2 + 0.5 + test;
-
-                Thread.Sleep(10);
-            }
-            Console.WriteLine(Math.Round(gameSpeed,2));
-            gameSpeed = Math.Round(gameSpeed, 2) + 0.05;
-            rightPosition = 0;
-            //rightPosition2 = 0;
-        }
-    }*/
-
-    public  void GameHandeling()
-    {
-        while (true)
-        {
-            if (gameSpeed < 0.4)
-            {
-                string avatarPathString = "/Images/Unicorns/Unicorn1SlowTransparent.gif";
-                avatarPath = new MarkupString(avatarPathString);
-                //InvokeAsync(() => { StateHasChanged(); });
-                Console.WriteLine("Den fede lille enøjning løber nu langsomt");
-            }
-            else if (gameSpeed > 0.4 && gameSpeed < 0.8)
-            {
-                string avatarPathString = "/Images/Unicorns/UnicornMediumTransparent.gif";
-                avatarPath = new MarkupString(avatarPathString);
-                //InvokeAsync(() => { StateHasChanged(); });
-                Console.WriteLine("Den fede lille enøjning har nu fået øje på noget mad og løber lidt hurtigere");
-            }
-            else if (gameSpeed > 0.8)
-            {
-                string avatarPathString = "/Images/Unicorns/Unicorn1FastTransparent.gif";
-                avatarPath = new MarkupString(avatarPathString);
-                //InvokeAsync(() => { StateHasChanged(); });
-                Console.WriteLine("Nu så den fede lille enøjning kage, nu løber den alt hvad den kan");
-            }
-        }
-    }
-
-    public void CreateScore()
-    {
-        gameScoreString = "<h1>Score: " + scoreCount + "</h1>";
-        gameScore = new MarkupString(gameScoreString);
     }
 }

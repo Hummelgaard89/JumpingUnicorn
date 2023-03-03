@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using JumpingUnicorn.Obstacles;
+using JumpingUnicorn.GameHandeling;
 
 namespace JumpingUnicorn
 {
@@ -33,6 +35,8 @@ namespace JumpingUnicorn
             services.AddServerSideBlazor();
             services.AddSingleton<AvatarService>();
             services.AddSingleton<FirebaseContext>();
+            services.AddScoped<ObstacleHandler>();
+            services.AddScoped<GameHandler>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
