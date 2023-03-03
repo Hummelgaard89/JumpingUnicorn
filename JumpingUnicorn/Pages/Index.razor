@@ -1,6 +1,8 @@
 ﻿@page "/";
 @using JumpingUnicorn.Data;
 @inject AvatarService avatarService;
+@inject IHttpContextAccessor _httpContextAccessor
+@inject NavigationManager NavManager
 <PageTitle>Index</PageTitle>
 
 <!DOCTYPE html>
@@ -10,19 +12,40 @@
         <img class="Logo" src="/Images/JumpingUnicornLogo.png" />
     </div>
     <div class="ButtonsContainer">
-        <button class="CloudyButton" >Leaderboard</button>
+        <button class="CloudyButton" onclick="location.href = 'https://localhost:7224/Leaderboard'">Leaderboard</button>
         <button class="CloudyButton" onclick="location.href = 'https://localhost:7224/Game'">New Game</button>
     </div>
     <div class="CurrentAvatarContainer">
-        <img class="CurrentAvatar" src=@avatarService.FindAvatar(Avatar.AvatarSpeed.Medium) />
+        <img class="CurrentAvatar" src=@PlayerAvatar />
     </div>
-    <div class="PickAvatarContainer">
-        <img class="PickAvatar" src="/Images/Unicorns/Unicorn2MediumTransparent.gif"/>
-    </div>
+    @for (int i = 0; i < NonPlayerAvatars.Count; i++)
+    {
+        var j = i;
+        <div class="PickAvatarContainer" @onclick="() => ChangeAvatar(NonPlayerIndex[j])">
+            <img class="PickAvatar" src="@NonPlayerAvatars[j]" />
+        </div>
+    }
+    
 </div>
 
 </html>
 @code {
-    
+    List<string> NonPlayerAvatars = new List<string>();
+    List<int> NonPlayerIndex = new List<int>();
+    string PlayerAvatar = "";
+
+    protected override void OnInitialized()
+    {
+        PlayerAvatar = avatarService.FindAvatar(Avatar.AvatarSpeed.Medium);
+        NonPlayerAvatars = avatarService.GetNonPlayerAvatars(Avatar.AvatarSpeed.Medium, out NonPlayerIndex);
+
+        base.OnInitialized();
+    }
+
+    private void ChangeAvatar(int index)
+    {
+        NavManager.NavigateTo(NavManager.GetUriWithQueryParameter("ChangeAvatar", index), true);
+    }
+
 }
 

@@ -32,7 +32,6 @@ namespace JumpingUnicorn
             // Add services to the container.
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<AvatarService>();
             services.AddSingleton<FirebaseContext>();
 
@@ -112,15 +111,17 @@ namespace JumpingUnicorn
 
             app.UseSession();
 
+
             app.UseRouting();
 
             app.MapBlazorHub();
             app.MapFallbackToPage("/_Host");
 
             app.Use(async (context,next) => {
-                const string CookieName = "avatar";
-                if (context.Request.Cookies[CookieName] == null || !int.TryParse(context.Request.Cookies[CookieName], out int res))
+
+                if (context.Request.Query["ChangeAvatar"].Count > 0)
                 {
+                    var branchVer = context.Request.Query["ChangeAvatar"];
                     var cookieOptions = new CookieOptions
                     {
                         // Set the secure flag, which Chrome's changes will require for SameSite none.
@@ -137,9 +138,35 @@ namespace JumpingUnicorn
                     };
 
                     // Add the cookie to the response cookie collection
-                    context.Response.Cookies.Append(CookieName, "0", cookieOptions);
+                    context.Response.Cookies.Append("avatar", branchVer.ToString(), cookieOptions);
+                }
+                else
+                {
+                    const string CookieName = "avatar";
+                    if (context.Request.Cookies[CookieName] == null || !int.TryParse(context.Request.Cookies[CookieName], out int res))
+                    {
+                        var cookieOptions = new CookieOptions
+                        {
+                            // Set the secure flag, which Chrome's changes will require for SameSite none.
+                            // Note this will also require you to be running on HTTPS
+                            Secure = true,
+
+                            // Set the cookie to HTTP only which is good practice unless you really do need
+                            // to access it client side in scripts.
+                            HttpOnly = true,
+
+                            // Add the SameSite attribute, this will emit the attribute with a value of none.
+                            // To not emit the attribute at all set the SameSite property to SameSiteMode.Unspecified.
+                            SameSite = SameSiteMode.Unspecified
+                        };
+
+                        // Add the cookie to the response cookie collection
+                        context.Response.Cookies.Append(CookieName, "0", cookieOptions);
+                    }
+                    
                 }
                 await next(context);
+
             });
 
             app.Run();

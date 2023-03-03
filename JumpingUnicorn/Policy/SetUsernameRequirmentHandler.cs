@@ -7,6 +7,10 @@ using System.Security.Claims;
 
 namespace JumpingUnicorn.Policy
 {
+
+    /// <summary>
+    /// This class checks if the user has a username
+    /// </summary>
     public class SetUsernameRequirmentHandler : AuthorizationHandler<SetUsernameRequirment>
     {
         private readonly FirebaseContext db;
@@ -30,7 +34,7 @@ namespace JumpingUnicorn.Policy
                 return Task.CompletedTask;
             }
 
-            if (await db.DoesUserHasUsername(id))
+            if (await db.DoesUserHasUsernameAsync(id))
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;

@@ -1,11 +1,23 @@
-﻿@inject NavigationManager NavManager
+﻿@using System.Security.Claims;
+@inject NavigationManager NavManager
+@inject IHttpContextAccessor httpContextAccessor;
 
 <h3>UsernameRedirct</h3>
 
 @code {
     protected override void OnInitialized()
     {
-        NavManager.NavigateTo("/RegisterUsername");
+        if (httpContextAccessor.HttpContext.User.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier))
+        {
+            NavManager.NavigateTo("/RegisterUsername");
+        }
+        else
+        {
+            NavManager.NavigateTo("/Identity/Login");
+        }
+
+
+        
         base.OnInitialized();
     }
 }

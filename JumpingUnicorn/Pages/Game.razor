@@ -1,6 +1,7 @@
 ﻿@page "/Game"
 @using Microsoft.AspNetCore.Components.Web
-
+@attribute [Authorize("UsernameSet")]
+@inject IHttpContextAccessor httpContextAccessor;
 @inject IJSRuntime JSRT;
 @inject NavigationManager uriHelper;
 

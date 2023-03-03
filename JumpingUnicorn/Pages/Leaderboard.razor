@@ -1,13 +1,61 @@
 ﻿@page "/Leaderboard"
 @using JumpingUnicorn.Database;
+@using JumpingUnicorn.Data;
 @inject FirebaseContext db;
 @attribute [AllowAnonymous];
 
 
-<h3>FirebaseTest</h3>
+<h3>Leaderboard</h3>
+
+@if (users == null)
+{
+    <h3>Loading.....</h3>
+}
+else
+{
+    <table>
+        <tr>
+            <th>Avatar</th>
+            <th>Username</th>
+            <th>Highscore</th>
+        </tr>
+        @foreach (User user in users)
+        {
+            <tr>
+                <td> <img src="@user.GoogleAvatar" height="100px" width="100px" referrerpolicy="no-referrer" /> </td>
+                <td>@user.Username</td>
+                <td>@user.Highscore</td>
+            </tr>
+        }
+    </table>
+}
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
 
 @code {
+    List<User> users;
 
 
+    protected override async Task OnInitializedAsync()
+    {
+        users = await db.GetAllUsersAsync();
+        base.OnInitializedAsync();
+    }
 
 }

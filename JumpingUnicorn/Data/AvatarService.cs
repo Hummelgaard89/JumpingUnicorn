@@ -63,14 +63,9 @@ namespace JumpingUnicorn.Data
 
         public string FindAvatar(Avatar.AvatarSpeed wantedAvatarSpeed = Avatar.AvatarSpeed.Medium)
         {   
-            int avatarIndex = 0;
-            if (_httpContextAccessor.HttpContext == null)
-                return GetAvatar(0, wantedAvatarSpeed);
+            int avatarIndex = GetPlayerAvatarIndex();
 
-            if (_httpContextAccessor.HttpContext.Request.Cookies["avatar"] == null)
-                return GetAvatar(0, wantedAvatarSpeed);
-
-            if (!int.TryParse(_httpContextAccessor.HttpContext.Request.Cookies["avatar"], out avatarIndex))
+            if (avatarIndex == -1)
                 return GetAvatar(0, wantedAvatarSpeed);
 
             if (Avatars.Count < avatarIndex || avatarIndex <= -1)
@@ -79,9 +74,42 @@ namespace JumpingUnicorn.Data
             return GetAvatar(avatarIndex, wantedAvatarSpeed);
         }
 
-        string GetAvatar(int index, Avatar.AvatarSpeed wantedAvatarSpeed)
+        public string GetAvatar(int index, Avatar.AvatarSpeed wantedAvatarSpeed)
         {
             return Avatars[index].AvatarsPaths.Find(x => x.Speed == wantedAvatarSpeed).Path;
+        }
+
+        public int GetPlayerAvatarIndex()
+        {
+            if (_httpContextAccessor.HttpContext == null)
+                return -1;
+
+            if (_httpContextAccessor.HttpContext.Request.Cookies["avatar"] == null)
+                return -1;
+
+            if (int.TryParse(_httpContextAccessor.HttpContext.Request.Cookies["avatar"], out int avatarIndex))
+                return avatarIndex;
+
+            return -1;
+        }
+
+        public List<string> GetNonPlayerAvatars(Avatar.AvatarSpeed wantedAvatarSpeed, out List<int> indexes)
+        {
+            List<string> result = new List<string>();
+            indexes = new List<int>();
+            int avatarIndex = GetPlayerAvatarIndex();
+
+
+            for (int i = 0; i < Avatars.Count; i++)
+            {
+                if (avatarIndex != i)
+                {
+                    result.Add(GetAvatar(i,wantedAvatarSpeed));
+                    indexes.Add(i);
+                }
+            }
+
+            return result;
         }
     }
 }
