@@ -7,14 +7,24 @@
 @inject IHttpContextAccessor _httpContextAccessor
 @inject FirebaseContext firebase;
 
-<h3>RegisterUsername</h3>
 
-<EditForm Model="@model" OnValidSubmit="@HandleUsername">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <InputText id="name" @bind-Value="model.Username"/>
-    <button type="submit">Submit</button>
-</EditForm>
+<div class="mainBackgroundIMG">
+    <div class="LogoContainer">
+        <img class="Logo" src="/Images/JumpingUnicornLogo.png" />
+    </div>
+    <div class="ButtonsContainer">
+        <EditForm Model="@model" OnValidSubmit="@HandleUsername">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <label class="titleText" for="name">Insert Username: </label>
+            <InputText id="name" @bind-Value="model.Username" class="inputfield" />
+            <button type="submit" class="CloudyButton">Submit</button>
+        </EditForm>
+    </div>
+    
+</div>
+
+
 
 @code {
     private UsernameModel model = new();

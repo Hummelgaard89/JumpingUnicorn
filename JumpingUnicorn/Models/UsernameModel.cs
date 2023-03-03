@@ -2,6 +2,10 @@
 
 namespace JumpingUnicorn.Models
 {
+
+    /// <summary>
+    /// This class is for when the user is inputing their username in an input field
+    /// </summary>
     public class UsernameModel
     {
         [Required]

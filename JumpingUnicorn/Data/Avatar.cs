@@ -1,5 +1,9 @@
 ﻿namespace JumpingUnicorn.Data
 {
+
+    /// <summary>
+    /// This class is for storing player avatars for the game
+    /// </summary>
     public class Avatar
     {
         public string Path { get; set; }

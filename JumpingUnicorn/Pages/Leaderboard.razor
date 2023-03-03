@@ -4,31 +4,35 @@
 @inject FirebaseContext db;
 @attribute [AllowAnonymous];
 
+<div class="mainBackgroundIMG">
+    <div style="text-align: center;">
+        <h3>Leaderboard</h3>
+    </div>
 
-<h3>Leaderboard</h3>
-
-@if (users == null)
-{
-    <h3>Loading.....</h3>
-}
-else
-{
-    <table>
-        <tr>
-            <th>Avatar</th>
-            <th>Username</th>
-            <th>Highscore</th>
-        </tr>
-        @foreach (User user in users)
-        {
+    @if (users == null)
+    {
+        <h3>Loading.....</h3>
+    }
+    else
+    {
+        <table>
             <tr>
-                <td> <img src="@user.GoogleAvatar" height="100px" width="100px" referrerpolicy="no-referrer" /> </td>
-                <td>@user.Username</td>
-                <td>@user.Highscore</td>
+                <th>Avatar</th>
+                <th>Username</th>
+                <th>Highscore</th>
             </tr>
-        }
-    </table>
-}
+            @foreach (User user in users)
+            {
+                <tr>
+                    <td> <img src="@user.GoogleAvatar" height="100px" width="100px" referrerpolicy="no-referrer" /> </td>
+                    <td>@user.Username</td>
+                    <td>@user.Highscore</td>
+                </tr>
+            }
+        </table>
+    }
+</div>
+
 
 <style>
     table {
@@ -46,6 +50,10 @@ else
     tr:nth-child(even) {
         background-color: #dddddd;
     }
+
+    tr:nth-child(odd) {
+        background-color: gray;
+    }
 </style>
 
 @code {
@@ -55,7 +63,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         users = await db.GetAllUsersAsync();
-        base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 
 }

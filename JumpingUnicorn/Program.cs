@@ -25,7 +25,6 @@ namespace JumpingUnicorn
         {
 
             var builder = WebApplication.CreateBuilder(args);
-            var connectionString = builder.Configuration.GetConnectionString("JumpingUnicornContextConnection") ?? throw new InvalidOperationException("Connection string 'JumpingUnicornContextConnection' not found.");
             var services = builder.Services;
             var configuration = builder.Configuration;
 
@@ -121,47 +120,26 @@ namespace JumpingUnicorn
 
                 if (context.Request.Query["ChangeAvatar"].Count > 0)
                 {
-                    var branchVer = context.Request.Query["ChangeAvatar"];
+                    var avatarIndex = context.Request.Query["ChangeAvatar"];
                     var cookieOptions = new CookieOptions
                     {
-                        // Set the secure flag, which Chrome's changes will require for SameSite none.
-                        // Note this will also require you to be running on HTTPS
                         Secure = true,
-
-                        // Set the cookie to HTTP only which is good practice unless you really do need
-                        // to access it client side in scripts.
                         HttpOnly = true,
-
-                        // Add the SameSite attribute, this will emit the attribute with a value of none.
-                        // To not emit the attribute at all set the SameSite property to SameSiteMode.Unspecified.
                         SameSite = SameSiteMode.Unspecified
                     };
-
-                    // Add the cookie to the response cookie collection
-                    context.Response.Cookies.Append("avatar", branchVer.ToString(), cookieOptions);
+                    context.Response.Cookies.Append("avatar", avatarIndex.ToString(), cookieOptions);
                 }
                 else
                 {
-                    const string CookieName = "avatar";
-                    if (context.Request.Cookies[CookieName] == null || !int.TryParse(context.Request.Cookies[CookieName], out int res))
+                    if (context.Request.Cookies["avatar"] == null || !int.TryParse(context.Request.Cookies["avatar"], out int res))
                     {
                         var cookieOptions = new CookieOptions
                         {
-                            // Set the secure flag, which Chrome's changes will require for SameSite none.
-                            // Note this will also require you to be running on HTTPS
                             Secure = true,
-
-                            // Set the cookie to HTTP only which is good practice unless you really do need
-                            // to access it client side in scripts.
                             HttpOnly = true,
-
-                            // Add the SameSite attribute, this will emit the attribute with a value of none.
-                            // To not emit the attribute at all set the SameSite property to SameSiteMode.Unspecified.
                             SameSite = SameSiteMode.Unspecified
                         };
-
-                        // Add the cookie to the response cookie collection
-                        context.Response.Cookies.Append(CookieName, "0", cookieOptions);
+                        context.Response.Cookies.Append("avatar", "0", cookieOptions);
                     }
                     
                 }

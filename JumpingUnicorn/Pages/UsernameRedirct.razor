@@ -5,6 +5,9 @@
 <h3>UsernameRedirct</h3>
 
 @code {
+
+    // This is used to redirct the user when the user dont is logged in or has not set an username
+
     protected override void OnInitialized()
     {
         if (httpContextAccessor.HttpContext.User.HasClaim(claim => claim.Type == ClaimTypes.NameIdentifier))

@@ -29,6 +29,8 @@ namespace JumpingUnicorn.Pages.Identity
                 pageHandler: "Callback",
                 values: new { returnUrl }),
             };
+
+            // Redirct the user to Googles login page
             return new ChallengeResult(provider, authenticationProperties);
         }
         public async Task<IActionResult> OnGetCallbackAsync(

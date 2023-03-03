@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace JumpingUnicorn.Data
 {
+
+    /// <summary>
+    /// This class is handling all the avatar logic and which avatar the player has
+    /// </summary>
     public class AvatarService
     {
         public List<AvatarCollection> Avatars = new List<AvatarCollection>();
@@ -16,6 +20,9 @@ namespace JumpingUnicorn.Data
             GetAllAvatars();
         }
 
+        /// <summary>
+        /// Locates all the avatars paths and puts them in a list
+        /// </summary>
         void GetAllAvatars()
         {
             string[] paths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/wwwroot/Images/Unicorns", "*.gif");
@@ -61,6 +68,11 @@ namespace JumpingUnicorn.Data
             }
         }
 
+        /// <summary>
+        /// Finds and returns the player avatar path
+        /// </summary>
+        /// <param name="wantedAvatarSpeed"></param>
+        /// <returns></returns>
         public string FindAvatar(Avatar.AvatarSpeed wantedAvatarSpeed = Avatar.AvatarSpeed.Medium)
         {   
             int avatarIndex = GetPlayerAvatarIndex();
@@ -74,11 +86,21 @@ namespace JumpingUnicorn.Data
             return GetAvatar(avatarIndex, wantedAvatarSpeed);
         }
 
+        /// <summary>
+        /// Gets the avatar path
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="wantedAvatarSpeed"></param>
+        /// <returns></returns>
         public string GetAvatar(int index, Avatar.AvatarSpeed wantedAvatarSpeed)
         {
             return Avatars[index].AvatarsPaths.Find(x => x.Speed == wantedAvatarSpeed).Path;
         }
 
+        /// <summary>
+        /// Gets which index the player avatar is from cookie
+        /// </summary>
+        /// <returns></returns>
         public int GetPlayerAvatarIndex()
         {
             if (_httpContextAccessor.HttpContext == null)
@@ -93,6 +115,12 @@ namespace JumpingUnicorn.Data
             return -1;
         }
 
+        /// <summary>
+        /// Gets all the avatars that the player is not selected
+        /// </summary>
+        /// <param name="wantedAvatarSpeed"></param>
+        /// <param name="indexes"></param>
+        /// <returns>Returns the list of paths that the player is not selected</returns>
         public List<string> GetNonPlayerAvatars(Avatar.AvatarSpeed wantedAvatarSpeed, out List<int> indexes)
         {
             List<string> result = new List<string>();

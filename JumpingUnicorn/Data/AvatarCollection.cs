@@ -1,5 +1,9 @@
 ﻿namespace JumpingUnicorn.Data
 {
+
+    /// <summary>
+    /// This class holds the list of class avatar
+    /// </summary>
     public class AvatarCollection
     {
         public List<Avatar> AvatarsPaths { get; set; }
