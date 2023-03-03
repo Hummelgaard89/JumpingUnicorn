@@ -2,8 +2,9 @@
 @using JumpingUnicorn.Models;
 @using JumpingUnicorn.Database;
 @using System.Security.Claims;
+@using System.Text.RegularExpressions;
+@inject NavigationManager NavManager
 @inject IHttpContextAccessor _httpContextAccessor
-@inject IAuthorizationHandler handler;
 @inject FirebaseContext firebase;
 
 <h3>RegisterUsername</h3>
@@ -21,7 +22,13 @@
     public async Task HandleUsername()
     {
         Console.WriteLine("En nigget har skrevet: " + model.Username);
-        await firebase.SetUsername(_httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value, model.Username);
+
+        Regex regex = new Regex("</{0,}[A-z =\"'/]{1,}>");
+
+        string usernameSanitized = regex.Replace(model.Username, "");
+
+        await firebase.SetUsernameAsync(_httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value, usernameSanitized);
+        NavManager.NavigateTo("/");
     }
 
 }

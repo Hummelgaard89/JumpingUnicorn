@@ -63,10 +63,10 @@ namespace JumpingUnicorn.Pages.Identity
                     string username = "";
                     string avatar = GoogleUser.Claims.Where(x => x.Type == "urn:google:image").FirstOrDefault().Value;
 
-                    await _firebaseContext.AddUserAsync(new Data.User(username,avatar, id));
+                    await _firebaseContext.AddUserAsync(new Data.User() { Username = username, GoogleAvatar = avatar, Id= id});
                 }
 
-                if (!await _firebaseContext.DoesUserHasUsername(userId))
+                if (!await _firebaseContext.DoesUserHasUsernameAsync(userId))
                 {
                     redirctURL = "/RegisterUsername";
                 }

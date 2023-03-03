@@ -7,6 +7,8 @@
 @inject AvatarService avatarServiceHelper
 @inject ObstacleHandler obstacleHelper
 @inject GameHandler gameHelper
+@attribute [Authorize("UsernameSet")]
+@inject IHttpContextAccessor httpContextAccessor;
 @inject IJSRuntime JSRT;
 @inject NavigationManager uriHelper;
 

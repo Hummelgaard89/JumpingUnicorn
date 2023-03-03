@@ -4,16 +4,26 @@ using JumpingUnicorn.Data;
 
 namespace JumpingUnicorn.Database
 {
+    /// <summary>
+    /// This class connects to Firestore and read and write to it. All the methods has to be async because the Firestore Library is forcing you to use async
+    /// </summary>
     public class FirebaseContext
     {
         public string ConnectionString { get; private set; } = "jumpingunicorn";
         
         FirestoreDb db;
 
-
         public FirebaseContext()
         {
            db = FirestoreDb.Create(ConnectionString);
+        }
+
+        private async Task<DocumentSnapshot> GetUserDocumentAsync(string id)
+        {
+            CollectionReference users = db.Collection("users");
+            Query query = users.WhereEqualTo("userId", id);
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            return querySnapshot.Documents.First();
         }
 
         public async Task AddUserAsync(User userInfo)
@@ -24,48 +34,74 @@ namespace JumpingUnicorn.Database
             {
                 {"userId",userInfo.Id },
                 {"username", userInfo.Username },
-                {"avatar", userInfo.GoogleAvatar }
+                {"avatar", userInfo.GoogleAvatar },
+                {"highscore", userInfo.Highscore }
             };
             await document.SetAsync(user);
         }
 
         public async Task<bool> DoesUsernameExistAsync(string username)
         {
-            CollectionReference citiesRef = db.Collection("users");
-            Query query = citiesRef.WhereEqualTo("username", username);
+            CollectionReference users = db.Collection("users");
+            Query query = users.WhereEqualTo("username", username);
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             return querySnapshot.Count > 0;
         }
 
         public async Task<bool> DoesUserExistAsync(string id)
         {
-            CollectionReference citiesRef = db.Collection("users");
-            Query query = citiesRef.WhereEqualTo("userId", id);
+            CollectionReference users = db.Collection("users");
+            Query query = users.WhereEqualTo("userId", id);
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             return querySnapshot.Count > 0;
         }
 
-        public async Task<bool> DoesUserHasUsername(string id)
+        public async Task<bool> DoesUserHasUsernameAsync(string id)
         {
-            CollectionReference citiesRef = db.Collection("users");
-            Query query = citiesRef.WhereEqualTo("userId", id);
-            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
-            DocumentSnapshot document = querySnapshot.Documents.First();
-            string a = document.GetValue<string>("username");
+            DocumentSnapshot snapshot = await GetUserDocumentAsync(id);
+            string a = snapshot.GetValue<string>("username");
             return !string.IsNullOrEmpty(a);
         }
 
-        public async Task SetUsername(string id, string username)
+        public async Task SetUsernameAsync(string id, string username)
         {
-            CollectionReference citiesRef = db.Collection("users");
-            Query query = citiesRef.WhereEqualTo("userId", id);
-            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
-            DocumentSnapshot document = querySnapshot.Documents.First();
+            DocumentSnapshot snapshot = await GetUserDocumentAsync(id);
             Dictionary<string, object> updates = new Dictionary<string, object>
             {
                 { "username", username }
             };
-            await document.Reference.UpdateAsync(updates);
+            await snapshot.Reference.UpdateAsync(updates);
+        }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            CollectionReference users = db.Collection("users");
+            Query query = users.OrderBy("highscore").Limit(20);
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            List<DocumentSnapshot> documents = querySnapshot.Documents.ToList();
+            List<User> usersList = new List<User>();
+
+            foreach (DocumentSnapshot document in documents)
+            {
+                usersList.Add(document.ConvertTo<User>());
+            }
+            return usersList;
+        }
+        
+        public async Task SetHighscore(string id, int highscore)
+        {
+            DocumentSnapshot snapshot = await GetUserDocumentAsync(id);
+            Dictionary<string, object> updates = new Dictionary<string, object>
+            {
+                { "highscore", highscore }
+            };
+            await snapshot.Reference.UpdateAsync(updates);
+        }
+
+        public async Task<User> GetUserAsync(string id)
+        {
+            DocumentSnapshot document = await GetUserDocumentAsync(id);
+            return document.ConvertTo<User>();
         }
     }
 }

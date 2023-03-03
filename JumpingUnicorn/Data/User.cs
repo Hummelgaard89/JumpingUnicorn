@@ -1,20 +1,21 @@
-﻿namespace JumpingUnicorn.Data
+﻿using Google.Cloud.Firestore;
+
+namespace JumpingUnicorn.Data
 {
+    [FirestoreData]
     public class User
     {
+
+        [FirestoreProperty("username")]
         public string Username { get; set; }
 
+        [FirestoreProperty("avatar")]
         public string GoogleAvatar { get; set; }
 
+        [FirestoreProperty("id")]
         public string Id { get; set; }
 
-
-        public User(string username, string googleavatar, string id)
-        {
-            Username = username;
-            GoogleAvatar = googleavatar;
-            Id = id;
-
-        }
+        [FirestoreProperty("highscore")]
+        public int Highscore { get; set; }
     }
 }

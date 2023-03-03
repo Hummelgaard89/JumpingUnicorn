@@ -1,11 +1,14 @@
 ﻿@using System.Security.Claims
 @using Microsoft.AspNetCore.Http
+@using JumpingUnicorn.Database;
+@using JumpingUnicorn.Data;
 @inject IHttpContextAccessor _httpContextAccessor
 @inject HttpClient Http
-@if (User.Identity.Name != null)
+@inject FirebaseContext db;
+@if (User.Identity.Name != null && user != null)
 {
-    <img src="@Avatar" width="56"  height="56"/>
-    <b>(@Role) You are logged in as: @GivenName @Surname</b>
+    <img src="@user.GoogleAvatar" width="56"  height="56"/>
+    <b>You are logged in as: @user.Username</b>
     <a class="ml-md-auto btn btn-primary"
    href="/Identity/Logout"
    target="_top">Logout</a>
@@ -18,70 +21,29 @@ else
 }
 @code {
     private ClaimsPrincipal User;
-    private string GivenName;
-    private string Surname;
-    private string Avatar;
-    private string Role;
-    protected override void OnInitialized()
+    private User user;
+
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
         try
         {
-
-            InvokeAsync(() => {});
             // Set the user to determine if they are logged in
             User = _httpContextAccessor.HttpContext.User;
 
-            var role = _httpContextAccessor.HttpContext.User
-                .FindFirst(ClaimTypes.Role);
+            var id = _httpContextAccessor.HttpContext.User
+                .FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            if (role != null)
-            {
-                Role = role.Value;
-            }
-            else
-            {
-                Role = "Unknow Role";
-            }  
+            user = await db.GetUserAsync(id);
 
-            // Try to get the GivenName
-            var givenName =
-                _httpContextAccessor.HttpContext.User
-                .FindFirst(ClaimTypes.GivenName);
-            if (givenName != null)
-            {
-                GivenName = givenName.Value;
-            }
-            else
-            {
-                GivenName = User.Identity.Name;
-            }
-            // Try to get the Surname
-            var surname =
-                _httpContextAccessor.HttpContext.User
-                .FindFirst(ClaimTypes.Surname);
-            if (surname != null)
-            {
-                Surname = surname.Value;
-            }
-            else
-            {
-                Surname = "";
-            }
-            // Try to get Avatar
-            var avatar =
-            _httpContextAccessor.HttpContext.User
-            .FindFirst("urn:google:image");
-            if (avatar != null)
-            {
-                Avatar = avatar.Value;
-            }
-            else
-            {
-                Avatar = "";
-            }
         }
         catch { }
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
     }
 
 
